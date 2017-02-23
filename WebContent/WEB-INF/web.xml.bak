@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+  <display-name>MetOfficeService</display-name>
+  <servlet>
+    <servlet-name>MetOfficeService</servlet-name>
+    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>org.glassfish.jersey.jettison.JettisonFeature</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    
+    <init-param>
+        <param-name>javax.ws.rs.Application</param-name>
+        <param-value>com.weather.framework.RESTApplication</param-value>
+    </init-param>
+    
+    <load-on-startup>1</load-on-startup>
+    <async-supported>true</async-supported>
+  </servlet>
+  
+    <filter>
+    <filter-name>CAS Filter</filter-name>
+    <!-- <filter-class>edu.yale.its.tp.cas.client.filter.CASFilter</filter-class> -->
+    <filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
+    <init-param>
+      <param-name>edu.yale.its.tp.cas.client.filter.loginUrl</param-name>
+      <param-value>https://cc.com:8443/cas-server-webapp-4.0.0/login</param-value>
+    </init-param>
+    <init-param>
+      <param-name>edu.yale.its.tp.cas.client.filter.validateUrl</param-name>
+      <param-value>https://cc.com:8443/cas-server-webapp-4.0.0/serviceValidate</param-value>
+    </init-param>
+    <init-param>
+      <param-name>edu.yale.its.tp.cas.client.filter.serverName</param-name>
+      <param-value>http://localhost:8080/MetOffice/index.html</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>CAS Filter</filter-name>
+    <url-pattern>/rest/*</url-pattern>
+  </filter-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>MetOfficeService</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
+</web-app>

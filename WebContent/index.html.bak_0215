@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="./libraries/BootStrap3.0.3/css/bootstrap.min.css">
+<script type="text/javascript" src="./libraries/jquery-1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="./libraries/BootStrap3.0.3/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+	function myAjax(url,data,succ,err){
+		$.ajax({
+			url:"http://localhost:8080/MetOffice/rest"+url,
+			type:"post",
+			data:data,
+			dataType:"json",
+			success:succ||function(data){
+				console.log(data);
+			},
+			error:err||function(data){
+				console.log(data);
+			}
+		});
+	}
+	//1：创建一个请假单
+	function addLeaveBill(){
+		myAjax("/leaveBill/save",{
+			username:$("#username").val(),
+			days:1,
+			content:"生病了",
+			remark:"无"
+		});
+	}
+	//2：查询我的请假单
+	function getLeaveBillList(){
+		myAjax("/leaveBill/getList",{
+			username:$("#username").val()
+		},function(data){
+			console.log(data);
+			//$("#tableBillList tbody").html("");
+			var html = "";
+			data.forEach( function(element, index) {
+				var tr = "<tr>"+
+					"<td>"+element.username+"</td>"+
+					"<td>"+element.id+"</td>"+
+					"<td>"+element.leaveDate+"</td>"+
+					"<td>"+element.state+"</td>"+
+					"<td>"+element.days+"</td>"+
+					"<td>"+element.content+"</td>"+
+					"<td>"+element.remark+"</td>"+
+					"</tr>";
+					html+=tr;
+			});
+			$("#tableBillList tbody").html(html);
+		});
+	}
+
+	//3：开始一个请假单
+	function startProcess(){
+		myAjax("/WorkflowResource/startProcess",{
+			username:$("#username").val(),
+			billId:$("#startBillId").val()||0,
+		});
+	}
+
+	//4:查看我的任务单
+	function assigneeTaskList(){
+		myAjax("/WorkflowResource/listTask",{
+			username:$("#username").val()
+		},function(data){
+			console.log(data);
+			$("#tableAssigneeTaskList tbody").html("");
+			data.forEach( function(element, index) {
+				var tr = "<tr>"+
+					"<td>"+element.assignee+"</td>"+
+					"<td>"+element.category+"</td>"+
+					"<td>"+element.createTime+"</td>"+
+					"<td>"+element.delegationState+"</td>"+
+					"<td>"+element.description+"</td>"+
+					"<td>"+element.dueDate+"</td>"+
+					"<td>"+element.executionId+"</td>"+
+					"<td>"+element.formKey+"</td>"+
+					"<td>"+element.id+"</td>"+
+					"<td>"+element.name+"</td>"+
+					"<td>"+element.owner+"</td>"+
+					"<td>"+element.parentTaskId+"</td>"+
+					"<td>"+element.priority+"</td>"+
+					"<td>"+element.processDefinitionId+"</td>"+
+					"<td>"+element.LeaveBill+"</td>"+
+					"<td>"+element.processInstanceId+"</td>"+
+					"<td>"+element.processVariables+"</td>"+
+					"<td>"+element.suspended+"</td>"+
+					"<td>"+element.taskDefinitionKey+"</td>"+
+					"<td>"+element.taskLocalVariables+"</td>"+
+					"<td>"+element.tenantId+"</td>"+
+					"</tr>";
+					$("#tableAssigneeTaskList tbody").append(tr);
+			});
+		});
+	}
+
+	//5:批准任务
+	function order1Task(){
+		myAjax("/WorkflowResource/submitTask",{
+			taskId:$("#order1TaskId").val()
+		},function(data){
+			console.log(data);
+		});
+	}
+
+</script>
+<title>Insert title here</title>
+</head>
+<body>
+
+<div class="container">
+	<div class="page-header">
+		当前用户：<input type="text" id="username" value="zhangsan">
+	</div>
+	<div>
+		<a href="#" onclick="addLeaveBill()">1：创建一个请假单</a>
+	</div>
+	<div>
+		<a href="#" onclick="getLeaveBillList()">2：查询我的请假单</a>
+		<table id="tableBillList" style='border:1px solid' rules='all'>
+		<thead><tr><td>username</td>
+				<td>id</td>
+				<td>leaveDate</td>
+				<td>state</td>
+				<td>days</td>
+				<td>content</td>
+				<td>remark</td></tr></thead>
+		<tbody>
+		</tbody>
+		</table>
+	</div>
+	<div><a href="#" onclick="startProcess()">3:开始流程 请假单id:</a><input type="text" id="startBillId"/></div>
+
+	<div>
+<a href="#" onclick="assigneeTaskList()">4：查看我的任务</a>
+			<table id="tableAssigneeTaskList" style='border:1px solid' rules='all'>
+		<thead><tr><td>assignee</td>
+			<td>category</td>
+			<td>createTime</td>
+			<td>delegationState</td>
+			<td>description</td>
+			<td>dueDate</td>
+			<td>executionId</td>
+			<td>formKey</td>
+			<td>id</td>
+			<td>name</td>
+			<td>owner</td>
+			<td>parentTaskId</td>
+			<td>priority</td>
+			<td>processDefinitionId</td>
+			<td>LeaveBill</td>
+			<td>processInstanceId</td>
+			<td>processVariables</td>
+			<td>suspended</td>
+			<td>taskDefinitionKey</td>
+			<td>taskLocalVariables</td>
+			<td>tenantId</td>
+			</tr></thead>
+		<tbody>
+		</tbody>
+		</table>
+	</div>
+	<div>
+	<a href="#" onclick="order1Task()">5:批准任务 任务id：</a><input type="text" id="order1TaskId"/>
+	</div>
+</div>
+
+</body>
+</html>
